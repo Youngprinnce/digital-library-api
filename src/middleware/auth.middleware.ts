@@ -57,26 +57,3 @@ export function requireAdmin(
 
   next();
 }
-
-/**
- * Optional authentication middleware - doesn't fail if no token
- */
-export function optionalAuth(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): void {
-  const authHeader = req.headers.authorization;
-
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.substring(7);
-
-    try {
-      const decoded = jwt.verify(token, config.jwtSecret) as JWTPayload;
-      req.user = decoded;
-    } catch (error) {
-    }
-  }
-
-  next();
-}

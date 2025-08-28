@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger";
-import config from "../config/env";
 
 export interface AppError extends Error {
   status?: number;
@@ -24,11 +23,8 @@ export function errorHandler(
   // Log error details
   logger.error("Error occurred:", {
     error: message,
-    stack: error.stack,
     url: req.url,
     method: req.method,
-    ip: req.ip,
-    userAgent: req.get("user-agent"),
   });
 
   // Don't expose stack trace in production
@@ -36,10 +32,6 @@ export function errorHandler(
     success: false,
     message,
   };
-
-  if (config.nodeEnv === "development") {
-    response.stack = error.stack;
-  }
 
   res.status(status).json(response);
 }
