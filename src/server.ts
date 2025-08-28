@@ -4,7 +4,7 @@ import logger from "./utils/logger";
 
 // Start the server
 const server = app.listen(config.port, () => {
-  logger.info("🚀 Digital Library API v2.0 started", {
+  logger.info("Digital Library API v1.0 started", {
     port: config.port,
     environment: config.nodeEnv,
     database: config.dbFile,

@@ -4,7 +4,6 @@ import routes from "./routes/index";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
 import { initializeDatabase } from "./config/db";
 import logger from "./utils/logger";
-import config from "./config/env";
 
 // Initialize database
 initializeDatabase();
