@@ -37,57 +37,6 @@ export class UserRepository {
   }
 
   /**
-   * Find user by username
-   */
-  static findByUsername(username: string): User | null {
-    return get("SELECT * FROM users WHERE username = ?", [username]);
-  }
-
-  /**
-   * Update user
-   */
-  static update(id: number, userData: Partial<UserInput>): User | null {
-    const fields = Object.keys(userData);
-    const values = Object.values(userData);
-
-    if (fields.length === 0) {
-      return this.findById(id);
-    }
-
-    const setClause = fields.map((field) => `${field} = ?`).join(", ");
-    const sql = `UPDATE users SET ${setClause} WHERE id = ?`;
-
-    query(sql, [...values, id]);
-    return this.findById(id);
-  }
-
-  /**
-   * Delete user
-   */
-  static delete(id: number): boolean {
-    const result = query("DELETE FROM users WHERE id = ?", [id]);
-    return result.changes > 0;
-  }
-
-  /**
-   * Get all users with pagination
-   */
-  static findAll(limit: number = 10, offset: number = 0): User[] {
-    return query(
-      "SELECT * FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?",
-      [limit, offset]
-    );
-  }
-
-  /**
-   * Get total count of users
-   */
-  static getTotalCount(): number {
-    const result = get("SELECT COUNT(*) as count FROM users");
-    return result.count;
-  }
-
-  /**
    * Check if email exists
    */
   static emailExists(email: string): boolean {

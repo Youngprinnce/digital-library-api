@@ -75,7 +75,6 @@ export function optionalAuth(
       const decoded = jwt.verify(token, config.jwtSecret) as JWTPayload;
       req.user = decoded;
     } catch (error) {
-      // Ignore invalid tokens in optional auth
     }
   }
 

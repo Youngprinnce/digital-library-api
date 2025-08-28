@@ -54,59 +54,6 @@ export class BookRepository {
   }
 
   /**
-   * Update book details
-   */
-  static update(id: number, bookData: Partial<BookInput>): Book | null {
-    const fields = Object.keys(bookData);
-    const values = Object.values(bookData);
-
-    if (fields.length === 0) {
-      return this.findById(id);
-    }
-
-    const setClause = fields.map((field) => `${field} = ?`).join(", ");
-    const sql = `UPDATE books SET ${setClause} WHERE id = ?`;
-
-    query(sql, [...values, id]);
-    return this.findById(id);
-  }
-
-  /**
-   * Delete book
-   */
-  static delete(id: number): boolean {
-    const result = query("DELETE FROM books WHERE id = ?", [id]);
-    return result.changes > 0;
-  }
-
-  /**
-   * Search books by title or author
-   */
-  static search(
-    searchTerm: string,
-    limit: number = 10,
-    offset: number = 0
-  ): Book[] {
-    const searchPattern = `%${searchTerm}%`;
-    return query(
-      "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? ORDER BY title LIMIT ? OFFSET ?",
-      [searchPattern, searchPattern, limit, offset]
-    );
-  }
-
-  /**
-   * Get search results count
-   */
-  static getSearchCount(searchTerm: string): number {
-    const searchPattern = `%${searchTerm}%`;
-    const result = get(
-      "SELECT COUNT(*) as count FROM books WHERE title LIKE ? OR author LIKE ?",
-      [searchPattern, searchPattern]
-    );
-    return result.count;
-  }
-
-  /**
    * Create borrow record
    */
   static createBorrowRecord(
@@ -122,21 +69,6 @@ export class BookRepository {
     return get("SELECT * FROM borrow_records WHERE id = ?", [
       result.lastInsertRowid,
     ]);
-  }
-
-  /**
-   * Return book (update borrow record)
-   */
-  static returnBook(userId: number, bookId: number): BorrowRecord | null {
-    query(
-      "UPDATE borrow_records SET returned_at = CURRENT_TIMESTAMP WHERE user_id = ? AND book_id = ? AND returned_at IS NULL",
-      [userId, bookId]
-    );
-
-    return get(
-      "SELECT * FROM borrow_records WHERE user_id = ? AND book_id = ? AND returned_at IS NOT NULL ORDER BY returned_at DESC LIMIT 1",
-      [userId, bookId]
-    );
   }
 
   /**
@@ -156,25 +88,6 @@ export class BookRepository {
       ORDER BY br.borrowed_at DESC
     `,
       [userId]
-    );
-  }
-
-  /**
-   * Get book borrow history
-   */
-  static getBookBorrowHistory(bookId: number): BorrowRecord[] {
-    return query(
-      `
-      SELECT 
-        br.*,
-        u.username,
-        u.email
-      FROM borrow_records br
-      INNER JOIN users u ON br.user_id = u.id
-      WHERE br.book_id = ?
-      ORDER BY br.borrowed_at DESC
-    `,
-      [bookId]
     );
   }
 
